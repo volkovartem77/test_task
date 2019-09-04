@@ -1,6 +1,6 @@
+import csv
 import os
 import asyncio
-import aiofiles
 
 
 class DataPack:
@@ -13,12 +13,14 @@ class DataPack:
         with open(self.path + '/' + self.OUTPUT, 'w') as f:
             f.writelines([x + '\n' for x in data])
 
+    async def csv_to_list(self, file_name):
+        with open(self.path + '/' + file_name, 'r') as f:
+            reader = csv.DictReader(f)
+            return[line["btcusdt"] for line in reader]
+
     async def fetch_data(self, name):
         print(f'Start process file {name}')
-
-        async with aiofiles.open(self.path + '/' + name, mode='r') as f:
-            prices = await f.readlines()
-            return map(lambda x: x.strip('\n'), prices)
+        return await self.csv_to_list(name)
 
     async def asynchronous(self, files):
         result_array = []
